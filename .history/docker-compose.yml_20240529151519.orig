@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  api:
+    container_name: ${APP_NAME:-dive-api}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - target: 8080 #${ROUTER_TARGET_PORT:-8080} docker-compose marks it as error 
+        published: ${ROUTER_PORT:-8080}
+        protocol: tcp
+        mode: host
+      - target: 2345 #${DELVE_TARGET_PORT:-2345}
+        published: ${DELVE_PORT:-2345}
+        protocol: tcp
+        mode: host
+    networks:
+      - default
+    # depends_on:
+    #   singlestore-db:
+    #     #condition: service_healthy
+    #     condition: service_started
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+
+  singlestore-db:
+    container_name: singlestore-db
+    image: "singlestore/cluster-in-a-box:alma-8.5.21-44f6c70f03-4.0.17-1.17.11"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1;' | mysql -h localhost -P ${DEV_DB_HOST_PORT} -u root -p${DEV_DB_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - default
+    ports:
+      - target: 3306 #${DEV_DB_TARGET_PORT:-3306}
+        published: ${DEV_DB_HOST_PORT:-3308}
+        protocol: tcp
+        mode: host  
+    environment:
+      ROOT_PASSWORD: "${DEV_DB_ROOT_PASSWORD:-root}"
+      SINGLESTORE_ROOT_PASSWORD: "${DEV_DB_ROOT_PASSWORD:-root}"
+      SINGLESTORE_DATABASE: "${DEV_DB_DATABASE:-test}"
+      SINGLESTORE_USER: "${DEV_DB_USERNAME:-ltp}"
+      SINGLESTORE_PASSWORD: "${DEV_DB_USER_PASSWORD:-12345}"
+    volumes:
+      - type: bind
+        source: ./.docker-volumes/singlestore
+        target: /var/lib/singlestore
+
+  dbeaver:
+    image: dbeaver/cloudbeaver:24.0.5
+    container_name: dbeaver-local
+    networks:
+      - default
+    restart: always
+    ports:
+      - target: 8090 #${DBEAVER_TARGET_PORT:-8090}
+        published: ${DBEAVER_PORT:-8090}
+        protocol: tcp
+        mode: host
+    volumes:
+      - ./clickhouse-jdbc.jar:/opt/dbeaver/plugins/clickhouse-jdbc.jar
+
+networks:
+  default:
