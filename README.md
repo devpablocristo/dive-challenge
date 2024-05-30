@@ -1,4 +1,58 @@
-## Golang Developer Assigment Challenge
+# Golang Developer Assignment
+
+This project provides a service that retrieves the Last Traded Price (LTP) of Bitcoin for the following currency pairs:
+
+- BTC/USD
+- BTC/CHF
+- BTC/EUR
+
+The service is built using Go and provides an API endpoint at `/api/v1/ltp`. The response includes the LTP for the specified currency pairs with time accuracy up to the last minute.
+
+## API Endpoint
+
+### GET /api/v1/ltp
+
+This endpoint retrieves the Last Traded Price of Bitcoin for the specified currency pairs. The request can be made for a single pair or a list of pairs.
+
+#### Request
+
+- **Path:** `/api/v1/ltp`
+- **Query Parameters:**
+  - `pair`: The currency pair(s) to retrieve the LTP for. Multiple pairs can be specified.
+
+#### Response
+
+The response will be in JSON format with the following structure:
+
+```json
+{
+  "ltp": [
+    {
+      "pair": "BTC/CHF",
+      "amount": 49000.12
+    },
+    {
+      "pair": "BTC/EUR",
+      "amount": 50000.12
+    },
+    {
+      "pair": "BTC/USD",
+      "amount": 52000.12
+    }
+  ]
+}
+```
+
+## Requirements
+
+- Time accuracy of the data up to the last minute.
+- Code hosted in a remote public repository.
+- `README.md` includes clear steps to build and run the app.
+- Integration tests.
+- Dockerized application.
+- Documentation.
+
+## Getting Started
 
 ### Prerequisites
 
@@ -29,12 +83,17 @@
 
 To enable debugging inside Docker, ensure that your `Dockerfile` and `docker-compose.yml` are set up to expose the debug port (e.g., 2345) and that Delve is installed in the Docker container.
 
-You can start the container with debugging enabled:
+You can start the container with debugging enabled by using the following command:
 ```sh
 make docker-build
 ```
+This command will build the Docker image and start the container with the necessary configuration for debugging.
 
-Then, you can attach your debugger to the specified port.
+If the containers are already built, you can start them without rebuilding by using the `make up` command:
+```sh
+make up
+```
+This command will start the Docker Compose services without rebuilding the images, making it quicker if no changes have been made to the Docker setup.
 
 ### Running Tests
 
@@ -57,7 +116,7 @@ make lint
 - `make run`: Run the project.
 - `make test`: Run tests.
 - `make docker-build`: Build and start Docker Compose services.
-- `make docker-up`: Start Docker Compose services.
+- `make up`: Start Docker Compose services if they are already built.
 - `make docker-down`: Stop and remove Docker Compose services.
 - `make clean`: Clean binary files.
 - `make lint`: Lint the code.
@@ -65,6 +124,7 @@ make lint
 ### Directory Structure
 
 ```
+.
 ├── cmd
 │   ├── api
 │   │   ├── build.go
@@ -75,7 +135,6 @@ make lint
 │   │       └── rest.go
 │   └── main.go
 ├── docker-compose.yml
-├── docker-compose.yml.orig
 ├── Dockerfile
 ├── entrypoint.sh
 ├── go.mod
@@ -100,4 +159,3 @@ make lint
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```

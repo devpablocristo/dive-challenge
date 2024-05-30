@@ -33,6 +33,5 @@ docker-compose*.yml
 build/
 dist/
 
-
 # History
 .history
