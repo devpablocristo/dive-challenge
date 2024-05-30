@@ -1,46 +1,54 @@
-SHELL := /bin/bash -O extglob
+SHELL := /bin/bash
 
-# Read variables from the .env file
-include .env
-export
-
-# Root directory of the project
+# Variables
 ROOT_DIR := $(shell pwd)
+APP_NAME := dive-api
+VERSION := 0.1
+BUILD_DIR := ${ROOT_DIR}/bin
 
-# Main targets
+# Phony targets
 .PHONY: all build run test docker-build docker-up docker-down clean lint
 
-# Build and run the project
+# Default target
 all: build run
 
 # Build target
 build:
-	go build -gcflags "all=-N -l" -o ${ROOT_DIR}/app/main/bin/${APP_NAME} -ldflags "-X main.Version=${VERSION}" ${ROOT_DIR}/app/main
+	@echo "Building the project..."
+	@mkdir -p ${BUILD_DIR}
+	go build -gcflags "all=-N -l" -o ${BUILD_DIR}/${APP_NAME} -ldflags "-X main.Version=${VERSION}" ${ROOT_DIR}/cmd
 
-# Run the project
+# Run target
 run:
-	@go run ${ROOT_DIR}/app/main/main.go
+	@echo "Running the project..."
+	@go run ${ROOT_DIR}/cmd/main.go
 
-# Run tests
+# Test target
 test:
+	@echo "Running tests..."
 	@go test ./...
 
-# Build and bring up Docker Compose services
+# Docker build target
 docker-build:
+	@echo "Building Docker images..."
 	docker-compose up --build
 
-# Bring up Docker Compose services
+# Docker up target
 docker-up:
+	@echo "Starting Docker containers..."
 	docker-compose up
 
-# Stop and remove Docker Compose services
+# Docker down target
 docker-down:
+	@echo "Stopping Docker containers..."
 	docker-compose down --remove-orphans
 
-# Clean binary files
+# Clean target
 clean:
-	@rm -f ${ROOT_DIR}/app/main/bin/${APP_NAME}
+	@echo "Cleaning up..."
+	@rm -f ${BUILD_DIR}/${APP_NAME}
 
-# Linter for code validation
+# Lint target
 lint:
+	@echo "Linting the project..."
 	@golangci-lint run --config .golangci.yml --verbose
