@@ -15,11 +15,11 @@ all: build run
 
 # Build target
 build:
-	go build -gcflags "all=-N -l" -o ${ROOT_DIR}/app/main/bin/${APP_NAME} -ldflags "-X main.Version=${VERSION}" ${ROOT_DIR}/appltp/bin
+	go build -gcflags "all=-N -l" -o ${ROOT_DIR}/app/main/bin/${APP_NAME} -ldflags "-X main.Version=${VERSION}" ${ROOT_DIR}/app/main
 
 # Run the project
 run:
-	@go run ${ROOT_DIR}/appltp/main.go
+	@go run ${ROOT_DIR}/app/main/main.go
 
 # Run tests
 test:
@@ -43,4 +43,4 @@ clean:
 
 # Linter for code validation
 lint:
-	@golangci-lint run
+	@golangci-lint run --config .golangci.yml --verbose
