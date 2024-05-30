@@ -24,16 +24,28 @@ buildServer() {
   fi
 }
 
-# Function to run the server
+# Function to run the server in normal mode
 runServer() {
-  log "Run server"
+  log "Run server in normal mode"
 
   log "Killing old server"
   pkill -f dlv || true
   pkill -f "/app/bin/$APP_NAME" || true
 
-  log "Run in debug mode"
-  dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec "/app/bin/$APP_NAME" &
+  log "Starting server in normal mode"
+  "/app/bin/$APP_NAME" &
+}
+
+# Function to run the server in debug mode
+runServerDebug() {
+  log "Run server in debug mode"
+
+  log "Killing old server"
+  pkill -f dlv || true
+  pkill -f "/app/bin/$APP_NAME" || true
+
+  log "Starting server with delve"
+  dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec "/app/bin/$APP_NAME"
 }
 
 # Function to rebuild and rerun the server
@@ -43,6 +55,13 @@ rerunServer() {
   runServer
 }
 
+# Function to rebuild and rerun the server in debug mode
+rerunServerDebug() {
+  log "Rerun server in debug mode"
+  buildServer
+  runServerDebug
+}
+
 # Function to monitor file changes and trigger server restart
 liveReloading() {
   log "Run liveReloading"
@@ -50,7 +69,11 @@ liveReloading() {
     while read file; do
       if [[ "$file" == *.go ]]; then
         log "File $file changed. Reloading..."
-        rerunServer
+        if [ "$DEBUG" = "true" ]; then
+          rerunServerDebug
+        else
+          rerunServer
+        fi
       fi
     done
   )
@@ -66,7 +89,11 @@ initializeFileChangeLogger() {
 main() {
   initializeFileChangeLogger
   buildServer
-  runServer
+  if [ "$DEBUG" = "true" ]; then
+    runServerDebug
+  else
+    runServer
+  fi
   liveReloading
 }
 
