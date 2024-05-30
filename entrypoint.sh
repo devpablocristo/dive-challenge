@@ -13,7 +13,15 @@ log() {
 # Function to build the server binary
 buildServer() {
   log "Building server binary"
-  go build -gcflags "all=-N -l" -o "/app/bin/$APP_NAME" "/app/cmd"
+  go build -gcflags "all=-N -l" -buildvcs=false -o "/app/bin/$APP_NAME" "/app/cmd/main.go"
+  # Verificar si el archivo binario se ha creado y es ejecutable
+  if [ -f "/app/bin/$APP_NAME" ]; then
+    log "Binary file created successfully"
+    chmod +x "/app/bin/$APP_NAME"
+  else
+    log "Failed to create binary file"
+    exit 1
+  fi
 }
 
 # Function to run the server
