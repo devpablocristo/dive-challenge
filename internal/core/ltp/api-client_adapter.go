@@ -41,7 +41,6 @@ func (a *ApiClient) GetKrakenLTPs(ctx context.Context, pairs []string) ([]LTP, t
 			return nil, time.Time{}, fmt.Errorf("api error: %v", tickerResp.Error)
 		}
 
-		// Registrar la hora actual como la hora en que se obtuvieron los datos
 		currentTime := time.Now()
 		if currentTime.After(latestTime) {
 			latestTime = currentTime
@@ -52,7 +51,6 @@ func (a *ApiClient) GetKrakenLTPs(ctx context.Context, pairs []string) ([]LTP, t
 			return nil, time.Time{}, fmt.Errorf("pair %s not found in response", pair)
 		}
 
-		// Asignar el par a cada LTPdto
 		quote.Pair = pair
 		lastTradedPrices = append(lastTradedPrices, quote)
 	}
