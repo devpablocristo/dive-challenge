@@ -74,26 +74,21 @@ The response will be in JSON format with the following structure:
 
 1. Build and start the Docker containers:
    ```sh
-   docker-compose up --build
+   make docker-up
    ```
 
 2. The application will be available at `http://localhost:8080`.
 
 #### Debugging Inside Docker
 
-To enable debugging inside Docker, ensure that your `Dockerfile` and `docker-compose.yml` are set up to expose the debug port (e.g., 2345) and that Delve is installed in the Docker container.
+To enable debugging inside Docker, ensure that your `Dockerfile` and `docker-compose.debug.yml` are set up to expose the debug port (e.g., 2345) and that Delve is installed in the Docker container.
 
-You can start the container with debugging enabled by using the following command:
-```sh
-make docker-build
-```
-This command will build the Docker image and start the container with the necessary configuration for debugging.
+1. Build and start the Docker containers in debug mode:
+   ```sh
+   make docker-dup
+   ```
 
-If the containers are already built, you can start them without rebuilding by using the `make up` command:
-```sh
-make up
-```
-This command will start the Docker Compose services without rebuilding the images, making it quicker if no changes have been made to the Docker setup.
+2. The application will be available at `http://localhost:8080` and will be waiting for a debugger to attach on port 2345.
 
 ### Running Tests
 
@@ -115,46 +110,17 @@ make lint
 - `make build`: Build the project.
 - `make run`: Run the project.
 - `make test`: Run tests.
-- `make docker-build`: Build and start Docker Compose services.
-- `make up`: Start Docker Compose services if they are already built.
-- `make docker-down`: Stop and remove Docker Compose services.
+
+- `make docker-build`: Build Docker images for production mode.
+- `make docker-up`: Start Docker Compose services in production mode.
+- `make docker-down`: Stop and remove Docker Compose services in production mode.
+
+- `make docker-dbuild`: Build Docker images for debug mode.
+- `make docker-dup`: Start Docker Compose services in debug mode.
+- `make docker-ddown`: Stop and remove Docker Compose services in debug mode.
+
 - `make clean`: Clean binary files.
 - `make lint`: Lint the code.
-
-### Directory Structure
-
-```
-.
-├── cmd
-│   ├── api
-│   │   ├── build.go
-│   │   ├── config.go
-│   │   └── handlers
-│   │       ├── presenter
-│   │       │   └── ltp.go
-│   │       └── rest.go
-│   └── main.go
-├── docker-compose.yml
-├── Dockerfile
-├── entrypoint.sh
-├── go.mod
-├── go.sum
-├── internal
-│   ├── core
-│   │   ├── ltp
-│   │   │   ├── api-client_adapter.go
-│   │   │   ├── dtos.go
-│   │   │   ├── ltp.go
-│   │   │   ├── ports.go
-│   │   │   └── repository.go
-│   │   ├── ports.go
-│   │   └── usecase.go
-│   └── platform
-│       └── stage
-│           └── stage.go
-├── makefile
-└── README.md
-```
 
 ## License
 

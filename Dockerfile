@@ -28,4 +28,4 @@ RUN chmod +x /entrypoint.sh
 EXPOSE 8080 2345
 
 # Define the entrypoint script for the container
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/entrypoint.sh"]

@@ -14,7 +14,11 @@ func Build(dep *Dependencies) *gin.Engine {
 	handler := hdl.NewRestHandler(usecase)
 
 	r := gin.Default()
-	r.GET("/api/v1/ltp", handler.GetLTP)
+
+	v1 := r.Group("/api/v1")
+	{
+		v1.GET("/ltp", handler.GetLTP)
+	}
 
 	log.Println("Running server on port " + dep.RouterPort + "...")
 	if err := r.Run(":" + dep.RouterPort); err != nil {
